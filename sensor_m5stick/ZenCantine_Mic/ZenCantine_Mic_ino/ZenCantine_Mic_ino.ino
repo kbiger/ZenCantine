@@ -64,7 +64,7 @@ void loop() {
         float mean = sum / 256.0;
         
         // Gain (Ajuste le 0.05 si nécessaire)
-        int volume = (int)(mean * 0.05);
+        int volume = (int)(mean * 0.15);
         if (volume > 120) volume = 120;
         
         // --- Affichage ---

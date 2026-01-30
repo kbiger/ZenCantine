@@ -20,11 +20,11 @@ GOVEE_PORT = 4003
 # 5  = Très réactif (Test)
 # 20 = Équilibré (Production - env. 2 sec)
 # 50 = Lent (Très stable)
-BUFFER_SIZE = 20 
+BUFFER_SIZE = 10 
 
 # Seuils de volume (0 à 120)
-SEUIL_TRIGGER = 80       # Seuil pour passer au ROUGE
-SEUIL_RESET = 60         # Seuil pour revenir au VERT
+SEUIL_TRIGGER = 70       # Seuil pour passer au ROUGE
+SEUIL_RESET = 50         # Seuil pour revenir au VERT
 
 # ==========================================
 # 🔧 FONCTIONS
