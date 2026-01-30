@@ -1,0 +1,12 @@
+# Mac system files
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Arduino
+build/
+*.elf
+*.bin
+*.hex

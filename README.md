@@ -1,15 +1,32 @@
-# 🧘 ZenCantine
+# 🤫 ZenCantine
 
-**Apaisez le bruit de la cantine grâce à un feedback visuel ludique.**
+Système autonome de surveillance du niveau sonore pour cantine scolaire.
+Le système affiche une alerte lumineuse (Lampe Govee) et visuelle (M5Stick) lorsque le bruit dépasse un seuil défini.
 
-ZenCantine est une solution IoT Open-Source conçue pour réduire le volume sonore dans les réfectoires scolaires. Le système écoute l'ambiance sonore et change la couleur des murs (Vert/Rouge) en temps réel pour indiquer aux enfants quand le volume devient trop élevé.
+## 📡 Architecture Réseau
 
-### 🛠 Architecture
-* **Oreilles (Capteurs) :** M5StickC Plus2 (ESP32) avec microphone I2S.
-* **Cerveau (Serveur) :** Raspberry Pi Zero 2 W (Python + UDP).
-* **Yeux (Actionneurs) :** Bandeaux LED Govee Neon pilotés en LAN local.
+Le Raspberry Pi agit comme routeur Wi-Fi autonome (Hotspot).
 
-### 🚀 Objectifs
-* **Coût réduit :** Moins de 500€ pour équiper une grande salle.
-* **Privacy :** Analyse locale du volume uniquement, aucun enregistrement audio.
-* **Open-Source :** Code sous licence GPLv3, reproductible par n'importe quelle école ou parent bricoleur.
+| Appareil | Rôle | IP (Fixe) | MAC Address |
+|---|---|---|---|
+| **Raspberry Pi** | Serveur / Routeur | `10.42.0.1` | N/A |
+| **M5StickC Plus 2** | Micro / Capteur | (DHCP) | - |
+| **Lampe Govee** | Indicateur Lumineux | `10.42.0.169` | `5C:E7:53:0E:6A:56` |
+
+* **SSID Wi-Fi :** `ZenCantine`
+* **Mot de passe :** `cantine2026`
+
+## 🚀 Installation & Démarrage
+
+Le système est conçu pour démarrer automatiquement à la mise sous tension.
+
+### 1. Raspberry Pi (Server)
+Le script se trouve dans `/home/admin/cantine_server.py`.
+Il est lancé au démarrage via `crontab`.
+
+### 2. M5Stick (Micro)
+Le code Arduino utilise la librairie `M5Unified` pour éviter les conflits hardware.
+Il envoie le volume via UDP sur le port `4210` vers le Raspberry.
+
+### 3. Lampe Govee
+La lampe est configurée avec une IP statique via `dnsmasq` sur le Raspberry pour garantir la connexion.
