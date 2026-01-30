@@ -28,13 +28,13 @@ Dans **Sketch > Include Library > Manage Libraries**, installer :
 
 Avant de téléverser, ouvrez le fichier `.ino` et vérifiez les lignes suivantes au début du fichier :
 
-```cpp
-// Configuration du Réseau Wi-Fi du Raspberry Pi
-const char* WIFI_SSID = "ZenCantine";
-const char* WIFI_PASS = "cantine2026"; 
-// Adresse IP du Serveur (Raspberry Pi)
-const char* TARGET_IP = "10.42.0.1";
-const int TARGET_PORT = 4210;
+    ```cpp
+    // Configuration du Réseau Wi-Fi du Raspberry Pi
+    const char* WIFI_SSID = "ZenCantine";
+    const char* WIFI_PASS = "cantine2026"; 
+    // Adresse IP du Serveur (Raspberry Pi)
+    const char* TARGET_IP = "10.42.0.1";
+    const int TARGET_PORT = 4210;
 
 ## Installation
 
