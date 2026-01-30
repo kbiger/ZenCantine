@@ -1,3 +1,4 @@
+![Logo ZenCantine](assets/ZenCantine_logo_full.png)
 # 🤫 ZenCantine
 
 Système autonome de surveillance du niveau sonore pour cantine scolaire.
