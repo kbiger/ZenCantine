@@ -11,6 +11,21 @@ except ImportError:
     exit()
 
 # ==========================================
+# 🔧 INITIALISATION
+# ==========================================
+
+# 1. Création du serveur d'écoute (pour recevoir le son du M5)
+sock_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+try:
+    sock_server.bind(("0.0.0.0", UDP_PORT))
+    print(f"👂 Serveur écoute sur {MY_PI_IP}:{UDP_PORT}")
+except Exception as e:
+    print(f"❌ Erreur liaison serveur: {e}")
+
+# 2. Création du client Govee (pour envoyer les ordres)
+sock_govee = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+# ==========================================
 # 🔧 FONCTIONS
 # ==========================================
 
