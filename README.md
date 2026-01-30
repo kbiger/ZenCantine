@@ -11,10 +11,10 @@ Le Raspberry Pi agit comme routeur Wi-Fi autonome (Hotspot).
 |---|---|---|---|
 | **Raspberry Pi** | Serveur / Routeur | `10.42.0.1` | N/A |
 | **M5StickC Plus 2** | Micro / Capteur | (DHCP) | - |
-| **Lampe Govee** | Indicateur Lumineux | `10.42.0.169` | `5C:E7:53:0E:6A:56` |
+| **Lampe Govee** | Indicateur Lumineux | `10.42.0.169` | `A RECUPERER SUR APP GOVEE` |
 
-* **SSID Wi-Fi :** `ZenCantine`
-* **Mot de passe :** `cantine2026`
+* **SSID Wi-Fi :** `A DEFINIR`
+* **Mot de passe :** `A DEFINIR`
 
 ## 🚀 Installation & Démarrage
 
