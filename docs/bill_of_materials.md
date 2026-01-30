@@ -14,7 +14,7 @@ Voici la liste des composants nécessaires pour assembler une unité "ZenCantine
 ## 📦 Matériel Testé et Approuvé
 
 | Composant | Description |
-| :--- | :--- | :---: | :--- |
+| :--- | :--- |
 | **Cerveau / Serveur** | Kit Raspberry Pi Zéro 2 W,WH - Starter - De chez Kubii
 | **Carte MicroSD** | Carte intégrée dans le Kit |
 | **Capteur Sonore** | M5Stack M5StickC PLUS2 Kit de développement IoT ESP32 | WiFi, IR | IMU 6 axes, microphone, RTC, LCD, batterie intégrée, buzzer passif  |
