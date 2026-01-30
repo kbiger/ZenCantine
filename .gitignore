@@ -10,3 +10,13 @@ build/
 *.elf
 *.bin
 *.hex
+
+# -------------------
+# SECRETS & CONFIGS
+# -------------------
+
+# Ignorer le fichier de secrets Arduino
+sensor_m5stick/ZenCantine_Mic/ZenCantine_Mic_ino/secrets.h
+
+# Ignorer le fichier de config Python
+server_raspberry/config.py

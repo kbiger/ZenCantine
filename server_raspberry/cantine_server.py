@@ -2,29 +2,13 @@ import socket
 import json
 import time
 
-# ==========================================
-# ⚙️ CONFIGURATION RÉSEAU (PROD)
-# ==========================================
-# Le Raspberry Pi (Server)
-MY_PI_IP = "10.42.0.1"
-UDP_PORT = 4210
-
-# La Lampe Govee (Actuator)
-GOVEE_IP = "10.42.0.169"
-GOVEE_PORT = 4003
-
-# ==========================================
-# 🎚️ RÉGLAGES SENSIBILITÉ (CANTINE)
-# ==========================================
-# Taille de la mémoire tampon (Moyenne glissante)
-# 5  = Très réactif (Test)
-# 20 = Équilibré (Production - env. 2 sec)
-# 50 = Lent (Très stable)
-BUFFER_SIZE = 10 
-
-# Seuils de volume (0 à 120)
-SEUIL_TRIGGER = 70       # Seuil pour passer au ROUGE
-SEUIL_RESET = 50         # Seuil pour revenir au VERT
+# On importe les variables depuis le fichier config
+try:
+    from config import *
+except ImportError:
+    print("❌ Erreur: Fichier 'config.py' introuvable.")
+    print("Veuillez renommer 'config_template.py' en 'config.py' et le remplir.")
+    exit()
 
 # ==========================================
 # 🔧 FONCTIONS

@@ -1,14 +1,9 @@
 #include <M5Unified.h>
 #include <WiFi.h>
 #include <WiFiUdp.h>
+#include "secrets.h"
 
-// ==========================================
-// ⚙️ CONFIGURATION WIFI
-// ==========================================
-const char* WIFI_SSID = "SSID_WIFI"; // MODIFIER
-const char* WIFI_PASS = "PWD_WIFI"; // ODIFIER
-const char* TARGET_IP = "10.42.0.1"; // Ton Raspberry Pi
-const int TARGET_PORT = 4210;
+// CONFIGURATION WIFI via secrets.h
 
 WiFiUDP udp;
 
