@@ -1,5 +1,7 @@
 # 🎤 Capteur Micro - M5StickC Plus 2
 
+> 📖 **Documentation disponible en:** [English](README.en.md) | [Français](README.md)
+
 Ce dossier contient le code source (C++ / Arduino) pour le module de détection sonore.
 Il mesure le volume ambiant et l'envoie via UDP au serveur Raspberry Pi.
 
@@ -28,13 +30,25 @@ Dans **Sketch > Include Library > Manage Libraries**, installer :
 
 Avant de téléverser, ouvrez le fichier `.ino` et vérifiez les lignes suivantes au début du fichier :
 
-    ```cpp
-    // Configuration du Réseau Wi-Fi du Raspberry Pi
-    const char* WIFI_SSID = "ZenCantine";
-    const char* WIFI_PASS = "cantine2026"; 
-    // Adresse IP du Serveur (Raspberry Pi)
-    const char* TARGET_IP = "10.42.0.1";
-    const int TARGET_PORT = 4210;
+```cpp
+// Configuration du Réseau Wi-Fi du Raspberry Pi
+const char* WIFI_SSID = "ZEN_CANTINE";
+const char* WIFI_PASS = "cantine2026";
+// Adresse IP du Serveur (Raspberry Pi)
+const char* TARGET_IP = "10.42.0.1";
+const int TARGET_PORT = 4210;
+```
+
+Pour éviter de mettre vos identifiants dans le sketch, copiez `config_template.h` en `config.h` et remplissez ces valeurs.
+
+Le M5Stick envoie ensuite le message UDP suivant au serveur :
+
+```txt
+vol:<valeur_en_dB>
+```
+
+Le niveau sonore est calculé en **dB SPL** (Sound Pressure Level) avec la formule :
+`dB = 20 × log₁₀(amplitude + 1) + 20`
 
 ## Installation
 

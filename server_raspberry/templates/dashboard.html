@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenCantine - Surveillance du Bruit</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">🍽️ ZenCantine - Surveillance du Bruit</h1>
+
+        <!-- Volume Actuel -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Volume Actuel</div>
+                    <div class="card-body">
+                        <h2 id="current-volume" class="text-primary">-- dB</h2>
+                        <p id="alert-status" class="text-muted">État: Calme</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Statistiques du Jour</div>
+                    <div class="card-body">
+                        <p>Alertes: <span id="alerts-today">0</span></p>
+                        <p>Volume Max: <span id="max-volume">0</span> dB</p>
+                        <p>Volume Moyen: <span id="avg-volume">0</span> dB</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration des Seuils -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">Configuration des Seuils Sonores</div>
+                    <div class="card-body">
+                        <form id="threshold-form">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="seuil-trigger" class="form-label">Seuil d'Alerte (dB)</label>
+                                    <input type="number" class="form-control" id="seuil-trigger" min="30" max="100" step="1">
+                                    <small class="form-text text-muted">Niveau pour passer au rouge (alerte)</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="seuil-reset" class="form-label">Seuil de Reset (dB)</label>
+                                    <input type="number" class="form-control" id="seuil-reset" min="30" max="100" step="1">
+                                    <small class="form-text text-muted">Niveau pour revenir au vert (calme)</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="buffer-size" class="form-label">Taille du Buffer</label>
+                                    <input type="number" class="form-control" id="buffer-size" min="1" max="100" step="1">
+                                    <small class="form-text text-muted">Lissage du signal (1-100)</small>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-primary">Sauvegarder</button>
+                                <button type="button" class="btn btn-secondary" id="reset-btn">Remettre les valeurs par défaut</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Réglage de l'heure -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">Réglage de l'Heure Système</div>
+                    <div class="card-body">
+                        <p class="text-muted">Le système n'étant pas connecté à Internet, ajustez l'heure pour des données temporelles correctes.</p>
+                        <form id="time-form">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="current-datetime" class="form-label">Date et Heure Actuelles</label>
+                                    <input type="datetime-local" class="form-control" id="current-datetime" step="1">
+                                </div>
+                                <div class="col-md-6 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-warning">Définir l'Heure</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="mt-3">
+                            <small class="text-muted">Heure système actuelle: <span id="system-time">--</span></small><br>
+                            <small class="text-muted">Offset appliqué: <span id="time-offset">--</span> secondes</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphique Historique -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">Historique du Volume</div>
+                    <div class="card-body">
+                        <canvas id="volume-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let chart;
+
+        // Fonction pour mettre à jour les données
+        async function updateData() {
+            try {
+                const [nowRes, statsRes] = await Promise.all([
+                    fetch('/api/now'),
+                    fetch('/api/stats')
+                ]);
+
+                const nowData = await nowRes.json();
+                const statsData = await statsRes.json();
+
+                document.getElementById('current-volume').textContent = nowData.volume + ' dB';
+                document.getElementById('alert-status').textContent = 'État: ' + (nowData.alert ? 'Alerte' : 'Calme');
+                document.getElementById('alerts-today').textContent = statsData.alerts_today;
+                document.getElementById('max-volume').textContent = statsData.max_volume;
+                document.getElementById('avg-volume').textContent = statsData.avg_volume;
+            } catch (error) {
+                console.error('Erreur lors de la mise à jour:', error);
+            }
+        }
+
+        // Fonction pour charger les seuils
+        async function loadThresholds() {
+            try {
+                const res = await fetch('/api/config');
+                const data = await res.json();
+                document.getElementById('seuil-trigger').value = data.seuil_trigger;
+                document.getElementById('seuil-reset').value = data.seuil_reset;
+                document.getElementById('buffer-size').value = data.buffer_size;
+            } catch (error) {
+                console.error('Erreur lors du chargement des seuils:', error);
+            }
+        }
+
+        // Fonction pour sauvegarder les seuils
+        document.getElementById('threshold-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const trigger = parseInt(document.getElementById('seuil-trigger').value);
+            const reset = parseInt(document.getElementById('seuil-reset').value);
+            const buffer = parseInt(document.getElementById('buffer-size').value);
+
+            try {
+                const res = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        seuil_trigger: trigger, 
+                        seuil_reset: reset,
+                        buffer_size: buffer
+                    })
+                });
+
+                const result = await res.json();
+                if (res.ok) {
+                    alert('Configuration sauvegardée avec succès!');
+                } else {
+                    alert('Erreur: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la sauvegarde.');
+            }
+        });
+
+        // Fonction pour reset aux valeurs par défaut
+        document.getElementById('reset-btn').addEventListener('click', async () => {
+            if (!confirm('Êtes-vous sûr de vouloir remettre les valeurs par défaut ?')) {
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/config/reset', {
+                    method: 'POST'
+                });
+
+                const result = await res.json();
+                if (res.ok) {
+                    alert('Configuration remise aux valeurs par défaut!');
+                    loadThresholds(); // Recharger les valeurs
+                } else {
+                    alert('Erreur: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors du reset.');
+            }
+        });
+
+        // Fonction pour charger les informations de temps
+        async function loadTimeInfo() {
+            try {
+                const res = await fetch('/api/time');
+                const data = await res.json();
+                document.getElementById('system-time').textContent = new Date(data.system_time * 1000).toLocaleString();
+                document.getElementById('time-offset').textContent = data.offset.toFixed(1);
+                
+                // Pré-remplir le champ datetime avec l'heure actuelle ajustée
+                const adjustedTime = new Date(data.current_time * 1000);
+                const isoString = adjustedTime.toISOString().slice(0, 16); // Format pour datetime-local
+                document.getElementById('current-datetime').value = isoString;
+            } catch (error) {
+                console.error('Erreur lors du chargement des infos temps:', error);
+            }
+        }
+
+        // Fonction pour définir l'heure
+        document.getElementById('time-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const datetimeValue = document.getElementById('current-datetime').value;
+            
+            if (!datetimeValue) {
+                alert('Veuillez saisir une date et heure.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/time', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ datetime: datetimeValue + ':00' }) // Ajouter secondes si manquant
+                });
+
+                const result = await res.json();
+                if (res.ok) {
+                    alert('Heure définie avec succès!');
+                    loadTimeInfo(); // Recharger les infos
+                } else {
+                    alert('Erreur: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la définition de l\'heure.');
+            }
+        });
+
+        // Fonction pour charger l'historique
+        async function loadHistory(range = 'hour') {
+            try {
+                const res = await fetch(`/api/history?range=${range}`);
+                const data = await res.json();
+
+                const labels = data.map(d => new Date(d.time * 1000).toLocaleTimeString());
+                const volumes = data.map(d => d.vol);
+
+                if (chart) chart.destroy();
+
+                chart = new Chart(document.getElementById('volume-chart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Volume (dB)',
+                            data: volumes,
+                            borderColor: 'rgb(75, 192, 192)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: 30,
+                                max: 90
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Erreur lors du chargement de l\'historique:', error);
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            loadThresholds();
+            loadTimeInfo();
+            updateData();
+            loadHistory();
+            setInterval(updateData, 2000); // Mise à jour toutes les 2 secondes
+        });
+    </script>
+</body>
+</html>
